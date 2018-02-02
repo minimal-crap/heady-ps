@@ -59,6 +59,7 @@ class ProductController {
       }
     }catch(error){
       console.log(`ProductController::getByCategory:${error.message}`);
+      response.status(500).send('server error');
     }
   }
 
@@ -78,6 +79,7 @@ class ProductController {
       })
     } catch (error) {
       console.log(`ProductController::post:${error.message}`);
+      response.status(500).send('server error');
     }
   }
 
@@ -101,7 +103,6 @@ class ProductController {
           };
         }
       }
-      console.log(query);
       Product.findByIdAndUpdate(
         request.params.id,
         query,
@@ -115,6 +116,7 @@ class ProductController {
 
     } catch (error) {
       console.log(`ProductController::put:${error.message}`);
+      response.status(500).send('server error');
     }
   }
 }
@@ -172,7 +174,6 @@ class CategoryController {
         new: true
       };
       let query = {};
-      console.log(request.body);
       for (let key in request.body) {
         if (key == 'child_categories') {
           query['$addToSet'] = {
@@ -186,13 +187,11 @@ class CategoryController {
           };
         }
       }
-      console.log(query);
       Category.findByIdAndUpdate(
         request.params.id,
         query,
         options,
         (error, category) => {
-          console.log(error);
           if (error) {
             return response.status(500).send('server error while updating category');
           }
