@@ -18,15 +18,47 @@ class ProductController {
 
   static get(request, response) {
     try {
-      Product.find({}, (error, products) => {
-        if (error) {
-          response.status(500).send('server error while fetching products');
-        }
-        response.status(200).send(products);
-      });
+      if (request.params.id == undefined) {
+        Product.find({}, (error, products) => {
+          if (error) {
+            response.status(500).send('server error while fetching products');
+          }
+          response.status(200).send(products);
+        });
+      } else {
+        Product.findById(request.params.id, (error, products) => {
+          if (error) {
+            response.status(500).send('server error while fetching products');
+          }
+          response.status(200).send(products);
+        });
+      }
     } catch (error) {
       console.log(`ProductController::get:${error.message}`);
       response.status(500).send('server error');
+    }
+  }
+
+  static getByCategory(request, response){
+    try{
+      if(request.params.category_id != undefined ){
+        Product.find({categories: request.params.category_id}, (error, products) => {
+          if(error){
+            return response.status(500).send('server error while fetching products');
+          }
+          response.status(200).send(products);
+        });
+      }
+      else{
+        Product.find({}, (error, products) => {
+          if(error){
+            return response.status(500).send('server error while fetching products');
+          }
+          response.status(200).send(products);
+        });
+      }
+    }catch(error){
+      console.log(`ProductController::getByCategory:${error.message}`);
     }
   }
 
@@ -93,13 +125,23 @@ class CategoryController {
   }
   static get(request, response) {
     try {
-      Category.find({}, (error, categories) => {
-        if (error) {
+      if (request.params.id == undefined) {
+        Category.find({}, (error, categories) => {
+          if (error) {
 
-          response.status(500).send('server error while fetching categories');
-        }
-        response.status(200).send(categories);
-      });
+            response.status(500).send('server error while fetching categories');
+          }
+          response.status(200).send(categories);
+        });
+      } else {
+        Category.findById(request.params.id, (error, categories) => {
+          if (error) {
+
+            response.status(500).send('server error while fetching categories');
+          }
+          response.status(200).send(categories);
+        });
+      }
     } catch (error) {
       console.log(`CategoryController::get:${error.message}`);
       response.status(500).send('server error');
@@ -166,11 +208,14 @@ class CategoryController {
 
 // product url mappings
 router.get('/product', (request, response) => ProductController.get(request, response));
+router.get('/product/:id', (request, response) => ProductController.get(request, response));
+router.get('/product_by_category/:category_id', (request, response) => ProductController.getByCategory(request, response));
 router.post('/product', (request, response) => ProductController.post(request, response));
 router.put('/product/:id', (request, response) => ProductController.put(request, response));
 
 // category url mappings
 router.get('/category', (request, response) => CategoryController.get(request, response));
+router.get('/category/:id', (request, response) => CategoryController.get(request, response));
 router.post('/category', (request, response) => CategoryController.post(request, response));
 router.put('/category/:id', (request, response) => CategoryController.put(request, response));
 
